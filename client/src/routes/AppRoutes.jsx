@@ -5,10 +5,10 @@ import AuthLayout from "../layout/AuthLayout";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import MainLayout from "../layout/MainLayout";
-import Products from "../pages/products";
+import Products from "../pages/Products";
 import Create from "../pages/Create";
 import ProductDetail from "../components/ProductDetail";
-import GetMe from "../pages/gETmE.JSX";
+import GetMe from "../pages/GetMe";
 
 const AppRoutes = () => {
   let router = createBrowserRouter([

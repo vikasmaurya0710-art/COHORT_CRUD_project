@@ -48,6 +48,13 @@ For production, add `MONGO_URI`, `ACCESS_TOKEN_SECRET`,
 `REFRESH_TOKEN_SECRET`, and `FRONTEND_URL` in the backend Vercel project's
 Environment Variables. Set `FRONTEND_URL` to the exact deployed frontend origin
 (for example, `https://your-store.vercel.app`, without a trailing slash).
+Use a MongoDB Atlas connection string for `MONGO_URI`; `localhost` is only
+accessible from the same machine and will not work from Vercel. In Atlas, allow
+network access from your deployed backend (for example, configure an appropriate
+IP access list entry) and ensure the database user has the required permissions.
+After deployment, `https://your-backend.vercel.app/api/health` should return
+`{"status":"ok","database":"connected"}` before registration or other API calls
+can succeed.
 
 Run the server:
 
@@ -87,10 +94,12 @@ http://localhost:5173
 Copy `client/.env.example` to `client/.env.local` for local development. The
 frontend uses Vite's `/api` proxy to reach the local backend. For the frontend
 Vercel project, set **Root Directory** to `client` and add `VITE_API_URL` as a
-build environment variable with the backend URL ending in `/api` (for example,
-`https://your-backend.vercel.app/api`). Redeploy the frontend after changing
-this variable. Set the backend's `FRONTEND_URL` to the frontend's exact
-deployed origin so credentialed API requests and refresh-token cookies work.
+build environment variable with the deployed backend URL (for example,
+`https://your-backend.vercel.app/api`). Do not set it to `/api` or the
+frontend's own URL. If the URL has no `/api` path, the client adds it
+automatically. Redeploy the frontend after changing this variable. Set the
+backend's `FRONTEND_URL` to the frontend's exact deployed origin so
+credentialed API requests and refresh-token cookies work.
 
 ## API Endpoints
 

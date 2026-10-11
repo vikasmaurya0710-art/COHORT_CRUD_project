@@ -1,7 +1,43 @@
 import axios from "axios"
 
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim()
+
+const getApiBaseUrl = () => {
+    if (!import.meta.env.PROD) {
+        return (configuredApiUrl || "/api").replace(/\/+$/, "")
+    }
+
+    if (!configuredApiUrl) {
+        throw new Error(
+            "VITE_API_URL must be set to your deployed backend URL in the Vercel frontend project."
+        )
+    }
+
+    let apiUrl
+    try {
+        apiUrl = new URL(configuredApiUrl)
+    } catch {
+        throw new Error(
+            "VITE_API_URL must be an absolute URL for the deployed backend, not a relative path such as /api."
+        )
+    }
+
+    if (!["http:", "https:"].includes(apiUrl.protocol)) {
+        throw new Error("VITE_API_URL must use HTTP or HTTPS.")
+    }
+
+    const apiPath = apiUrl.pathname.replace(/\/+$/, "")
+    if (!apiPath.endsWith("/api")) {
+        apiUrl.pathname = `${apiPath}/api`
+    }
+    apiUrl.search = ""
+    apiUrl.hash = ""
+
+    return apiUrl.toString().replace(/\/+$/, "")
+}
+
 export const API = axios.create({
-    baseURL: (import.meta.env.VITE_API_URL || "/api").replace(/\/+$/, ""),
+    baseURL: getApiBaseUrl(),
     withCredentials: true
 })
 

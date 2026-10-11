@@ -36,13 +36,20 @@ app.get("/", (_req, res) => {
     res.status(200).json({ status: "ok", message: "API is running" })
 })
 
-app.use("/api", async (_req, _res, next) => {
+app.use("/api", async (_req, res, next) => {
     try {
         await connectDB()
         next()
     } catch (error) {
-        next(error)
+        console.error("Database connection failed:", error.name, error.message)
+        return res.status(503).json({
+            message: "Database unavailable. Check the backend MONGO_URI and MongoDB network access settings.",
+        })
     }
+})
+
+app.get("/api/health", (_req, res) => {
+    res.status(200).json({ status: "ok", database: "connected" })
 })
 
 app.use("/api/auth",authRouter)

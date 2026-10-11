@@ -62,6 +62,14 @@ Backend runs on:
 http://localhost:3000
 ```
 
+### Deploy the backend to Vercel
+
+Create a Vercel project for the `server` directory (set **Root Directory** to
+`server`). Add `MONGO_URI`, `ACCESS_TOKEN_SECRET`, and `REFRESH_TOKEN_SECRET` as
+Vercel environment variables for the environments you deploy. Vercel uses the
+handler in `server/api/index.js`; visiting the deployment URL should return an
+`API is running` health response, and API routes are available under `/api`.
+
 ### Frontend
 
 ```bash

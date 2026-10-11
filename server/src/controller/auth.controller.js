@@ -6,6 +6,12 @@ import {
   readRefreshToken,
 } from "../utils/auth.util.js";
 
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+};
+
 export const register = async (req, res) => {
   try {
     let { name, email, password, confirmPassword } = req.body;
@@ -29,7 +35,7 @@ export const register = async (req, res) => {
     let accessToken = createAccessToken(user._id);
     let refreshToken = createRefreshToken(user._id);
 
-    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
     await authModel.findByIdAndUpdate(user._id, { refreshToken });
 
     res.status(201).json({
@@ -66,7 +72,7 @@ export const login = async (req, res) => {
     let accessToken = createAccessToken(user._id);
     let refreshToken = createRefreshToken(user._id);
 
-    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
     await authModel.findByIdAndUpdate(user._id, { refreshToken });
 
     res.status(200).json({
@@ -105,7 +111,7 @@ export const refresh = async (req, res) => {
     let accessToken = createAccessToken(userId);
     let newRefreshToken = createRefreshToken(userId);
 
-    res.cookie("refreshToken", newRefreshToken, { httpOnly: true });
+    res.cookie("refreshToken", newRefreshToken, refreshCookieOptions);
     await authModel.findByIdAndUpdate(userId, {
       refreshToken: newRefreshToken,
     });
@@ -159,7 +165,7 @@ export const logout = async(req,res)=>{
   let decoded = readRefreshToken(refreshToken)
   let {userId} = decoded
   let user = await authModel.findByIdAndUpdate(userId,{refreshToken:null})
-  res.clearCookie("refreshToken")
+  res.clearCookie("refreshToken", refreshCookieOptions)
 
   return res.status(200).json({
     message: "Logged out successfully"

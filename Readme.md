@@ -41,14 +41,13 @@ cd server
 npm install
 ```
 
-Create a `.env` file:
+Copy `server/.env.example` to `server/.env` for local development and set your
+own JWT secrets and MongoDB connection string.
 
-```env
-PORT=3000
-MONGO_URI=your_mongodb_connection_string
-ACCESS_TOKEN_SECRET=your_access_token_secret
-REFRESH_TOKEN_SECRET=your_refresh_token_secret
-```
+For production, add `MONGO_URI`, `ACCESS_TOKEN_SECRET`,
+`REFRESH_TOKEN_SECRET`, and `FRONTEND_URL` in the backend Vercel project's
+Environment Variables. Set `FRONTEND_URL` to the exact deployed frontend origin
+(for example, `https://your-store.vercel.app`, without a trailing slash).
 
 Run the server:
 
@@ -66,9 +65,10 @@ http://localhost:3000
 
 Create a Vercel project for the `server` directory (set **Root Directory** to
 `server`). Add `MONGO_URI`, `ACCESS_TOKEN_SECRET`, and `REFRESH_TOKEN_SECRET` as
-Vercel environment variables for the environments you deploy. Vercel uses the
-handler in `server/api/index.js`; visiting the deployment URL should return an
-`API is running` health response, and API routes are available under `/api`.
+Vercel environment variables for the environments you deploy, along with
+`FRONTEND_URL` set to the deployed frontend origin. Vercel uses the handler in
+`server/api/index.js`; visiting the deployment URL should return an `API is
+running` health response, and API routes are available under `/api`.
 
 ### Frontend
 
@@ -83,6 +83,14 @@ Frontend runs on:
 ```text
 http://localhost:5173
 ```
+
+Copy `client/.env.example` to `client/.env.local` for local development. The
+frontend uses Vite's `/api` proxy to reach the local backend. For the frontend
+Vercel project, set **Root Directory** to `client` and add `VITE_API_URL` as a
+build environment variable with the backend URL ending in `/api` (for example,
+`https://your-backend.vercel.app/api`). Redeploy the frontend after changing
+this variable. Set the backend's `FRONTEND_URL` to the frontend's exact
+deployed origin so credentialed API requests and refresh-token cookies work.
 
 ## API Endpoints
 
